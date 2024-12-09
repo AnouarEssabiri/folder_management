@@ -38,17 +38,18 @@ a.custom-menu-list span.icon{
 </style>
 <nav aria-label="breadcrumb ">
   <ol class="breadcrumb">
-  <li class="breadcrumb-item text-success">Home</li>
+  <li class="breadcrumb-item text-info">Home</li>
   </ol>
 </nav>
 <div class="containe-fluid">
 	<?php include('db_connect.php') ;
 	$files = $conn->query("SELECT f.*,u.name as uname FROM files f inner join users u on u.id = f.user_id where  f.is_public = 1 order by date(f.date_updated) desc");
+	// $files = $conn->query("SELECT * FROM files where  is_public = 1 order by date(date_updated) desc");
 
 	?>
 	<div class="row">
 		<div class="col-lg-12">
-			<div class="card col-md-4 offset-2 bg-success float-left">
+			<div class="card col-md-4 offset-2 bg-info float-left">
 				<div class="card-body text-white">
 					<h4><b>Users</b></h4>
 					<hr>
@@ -56,7 +57,7 @@ a.custom-menu-list span.icon{
 					<h3 class="text-right"><b><?php echo $conn->query('SELECT * FROM users')->num_rows ?></b></h3>
 				</div>
 			</div>
-			<div class="card col-md-4 offset-2 bg-success ml-4 float-left">
+			<div class="card col-md-4 offset-2 bg-info ml-4 float-left">
 				<div class="card-body text-white">
 					<h4><b>Files</b></h4>
 					<hr>

@@ -42,7 +42,7 @@ Class Action {
 		if(empty($id)){
 			$data .= ", user_id ='".$_SESSION['login_id']."' ";
 			
-			$check = $this->db->query("SELECT * FROM folders where user_id ='".$_SESSION['login_id']."' and name  ='".$name."'")->num_rows;
+			$check = $this->db->query("SELECT * FROM folders where user_id ='".$_SESSION['login_id']."' and name  ='".$name."' and parent_id ='".$parent_id."'")->num_rows;
 			if($check > 0){
 				return json_encode(array('status'=>2,'msg'=> 'Folder name already exist'));
 			}else{
@@ -85,7 +85,6 @@ Class Action {
 		if($_FILES['upload']['tmp_name'] != ''){
 					$fname = strtotime(date('y-m-d H:i')).'_'.$_FILES['upload']['name'];
 					$move = move_uploaded_file($_FILES['upload']['tmp_name'],'assets/uploads/'. $fname);
-		
 					if($move){
 						$file = $_FILES['upload']['name'];
 						$file = explode('.',$file);

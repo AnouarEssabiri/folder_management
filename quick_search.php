@@ -1,164 +1,60 @@
 <?php
 include 'db_connect.php';
 $folder_parent = isset($_GET['fid']) ? $_GET['fid'] : 0;
-$folders = $conn->query("SELECT * FROM folders where parent_id = $folder_parent and user_id = '" . $_SESSION['login_id'] . "'  order by name asc");
+$folders = $conn->query("SELECT * FROM folders where user_id = '" . $_SESSION['login_id'] . "'  order by name asc");
 
 
-$files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and user_id = '" . $_SESSION['login_id'] . "'  order by name asc");
+$files = $conn->query("SELECT * FROM files where user_id = '" . $_SESSION['login_id'] . "'  order by name asc");
 
 ?>
 <style>
-	/* General Styles */
-	body {
-		font-family: Arial, sans-serif;
-		background-color: #f9f9f9;
-		margin: 0;
-		padding: 0;
-	}
-
-	/* Folder & File Cards */
-	.folder-item,
-	.file-item {
-		border: 1px solid #ddd;
-		border-radius: 8px;
-		background: #fff;
-		padding: 20px;
-		text-align: center;
-		transition: all 0.3s ease-in-out;
-		box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-	}
-
-	.folder-item:hover,
-	.file-item:hover {
-		transform: scale(1.05);
-		background: #f0f8ff;
+	.folder-item {
 		cursor: pointer;
 	}
 
-	/* Breadcrumbs */
-	.breadcrumb {
-		background: transparent;
-		font-size: 14px;
-		padding: 10px 15px;
-		border-radius: 8px;
-		margin-bottom: 20px;
+	.folder-item:hover {
+		background: #eaeaea;
+		color: black;
+		box-shadow: 3px 3px #0000000f;
 	}
 
-	.breadcrumb a {
-		text-decoration: none;
-		color: #007bff;
-	}
-
-	.breadcrumb a:hover {
-		text-decoration: underline;
-	}
-
-	/* Buttons */
-	button {
-		border: none;
-		padding: 10px 15px;
-		color: #fff;
-		background: #007bff;
-		border-radius: 5px;
-		cursor: pointer;
-		transition: background-color 0.3s;
-	}
-
-	button:hover {
-		background: #0056b3;
-	}
-
-	#new_folder,
-	#new_file {
-		margin-right: 10px;
-	}
-
-	/* Search Bar */
-	.input-group {
-		margin: 20px 0;
-	}
-
-	.input-group .form-control {
-		border-radius: 4px 0 0 4px;
-		border: 1px solid #ddd;
-	}
-
-	.input-group .input-group-append .input-group-text {
-		border-radius: 0 4px 4px 0;
-		background: #007bff;
-		color: #fff;
-	}
-
-	/* Table */
-	table {
-		width: 100%;
-		border-collapse: collapse;
-		margin-top: 20px;
-		background: #fff;
-		border-radius: 8px;
-		overflow: hidden;
-		box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-	}
-
-	table th,
-	table td {
-		padding: 12px;
-		text-align: left;
-		border-bottom: 1px solid #ddd;
-	}
-
-	table th {
-		background: #f7f7f7;
-		font-weight: bold;
-	}
-
-	table tr:hover {
-		background: #f0f8ff;
-	}
-
-	/* Custom Context Menu */
 	.custom-menu {
 		z-index: 1000;
 		position: absolute;
-		background: #fff;
-		border: 1px solid #ddd;
+		background-color: #ffffff;
+		border: 1px solid #0000001c;
 		border-radius: 5px;
-		box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-		padding: 10px;
-		min-width: 150px;
+		padding: 8px;
+		min-width: 13vw;
 	}
 
-	.custom-menu a {
-		display: block;
-		color: #333;
-		padding: 8px 10px;
-		text-decoration: none;
-		border-radius: 4px;
-		transition: background-color 0.2s;
+	a.custom-menu-list {
+		width: 100%;
+		display: flex;
+		color: #4c4b4b;
+		font-weight: 600;
+		font-size: 1em;
+		padding: 1px 11px;
 	}
 
-	.custom-menu a:hover {
-		background: #007bff;
-		color: #fff;
+	.file-item {
+		cursor: pointer;
 	}
 
-	/* Responsive Design */
-	@media screen and (max-width: 768px) {
+	a.custom-menu-list:hover,
+	.file-item:hover,
+	.file-item.active {
+		background: #80808024;
+	}
 
-		.folder-item,
-		.file-item {
-			margin: 10px 0;
-			width: 100%;
-		}
+	table th,
+	td {
+		/*border-left:1px solid gray;*/
+	}
 
-		table th,
-		table td {
-			font-size: 14px;
-		}
-
-		.breadcrumb {
-			font-size: 12px;
-		}
+	a.custom-menu-list span.icon {
+		width: 1em;
+		margin-right: 5px
 	}
 </style>
 <nav aria-label="breadcrumb ">
@@ -166,56 +62,52 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 
 		<?php
 		$id = $folder_parent;
-		$breadcrumbs = [];
-
 		while ($id > 0) {
-			$path = $conn->query("SELECT * FROM folders WHERE id = $id")->fetch_array();
-			$breadcrumbs[] = '<li class="breadcrumb-item dynamic-item text-info" style="text-transform:uppercase">
-                              <a class="text-info" href="index.php?page=files&fid=' . $path['parent_id'] . '">' . $path['name'] . '</a>
-                          </li>';
+
+			$path = $conn->query("SELECT * FROM folders where id = $id  order by name asc")->fetch_array();
+		?>
+			<li class="breadcrumb-item text-info"><?php echo $path['name']; ?></li>
+		<?php
 			$id = $path['parent_id'];
 		}
-
-		$breadcrumbs[] = '<li class="breadcrumb-item" style="text-transform:uppercase">
-                          <a class="text-info" href="index.php?page=files">Files</a>
-                      </li>';
-
-		$breadcrumbs = array_reverse($breadcrumbs);
-
-		foreach ($breadcrumbs as $breadcrumb) {
-			echo $breadcrumb;
-		}
 		?>
-
+		<li class="breadcrumb-item"><a class="text-info" href="index.php?page=files">Files</a></li>
 	</ol>
-
 </nav>
 <div class="container-fluid">
 	<div class="col-lg-12">
 
 		<div class="row">
-			<button class="btn btn-info btn-sm" id="new_folder"><i class="fa fa-plus"></i> New Folder</button>
-			<button class="btn btn-info btn-sm ml-4" id="new_file"><i class="fa fa-upload"></i> Upload File</button>
+			<!-- <button class="btn btn-success btn-sm" id="new_folder"><i class="fa fa-plus"></i> New Folder</button> -->
+			<!-- <button class="btn btn-success btn-sm ml-4" id="new_file"><i class="fa fa-upload"></i> Upload File</button> -->
 		</div>
-		<hr>
-		<div class="row">
-			<div class="col-lg-12">
-				<div class="col-md-4 input-group offset-4">
-
-					<input type="text" class="form-control" placeholder="search ..." id="search" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+		<!-- <hr> -->
+		<div class="row my-3">
+			<div class="col-lg-12 d-flex justify-content-center">
+				<div class="col-md-6 input-group">
+					<input
+						type="text"
+						class="form-control search-input"
+						placeholder="Type to search..."
+						id="search"
+						aria-label="Search">
 					<div class="input-group-append">
-						<span class="input-group-text" id="inputGroup-sizing-sm"><i class="fa fa-search"></i></span>
+						<button class="btn btn-info" id="search-btn">
+							<i class="fa fa-search"></i>
+						</button>
 					</div>
 				</div>
 			</div>
 		</div>
+		<div id="no-results" class="text-center text-danger" style="display: none;">No results found!</div>
+
 		<div class="row">
 			<div class="col-md-12">
 				<h4><b>Folders</b></h4>
 			</div>
 		</div>
 		<hr>
-		<div class="row" style="justify-content:space-evenly">
+		<div class="row" style="justify-content: space-evenly;">
 			<?php
 			while ($row = $folders->fetch_assoc()):
 			?>
@@ -258,10 +150,9 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 						?>
 							<tr class='file-item' data-id="<?php echo $row['id'] ?>" data-name="<?php echo $name ?>">
 								<td>
-									<a href="./assets/uploads/<?php echo $row['file_path'] ?>" target="_blank">
-										<large><span><i class="fa <?php echo $icon ?>"></i></span><b class="to_file"> <?php echo $name ?></b></large>
-										<input type="text" class="rename_file" value="<?php echo $row['name'] ?>" data-id="<?php echo $row['id'] ?>" data-type="<?php echo $row['file_type'] ?>" style="display: none">
-									</a>
+									<large><span><i class="fa <?php echo $icon ?>"></i></span><b class="to_file"> <?php echo $name ?></b></large>
+									<input type="text" class="rename_file" value="<?php echo $row['name'] ?>" data-id="<?php echo $row['id'] ?>" data-type="<?php echo $row['file_type'] ?>" style="display: none">
+
 								</td>
 								<td><i class="to_file"><?php echo date('Y/m/d h:i A', strtotime($row['date_updated'])) ?></i></td>
 								<td><i class="to_file"><?php echo $row['description'] ?></i></td>
@@ -402,29 +293,36 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 		}
 
 	});
-	$(document).ready(function() {
-		$('#search').keyup(function() {
-			var _f = $(this).val().toLowerCase()
-			$('.to_folder').each(function() {
-				var val = $(this).text().toLowerCase()
-				if (val.includes(_f))
-					$(this).closest('.card').toggle(true);
-				else
-					$(this).closest('.card').toggle(false);
+	$(document).ready(function () {
+    $('#search').on('input', function () {
+        const query = $(this).val().toLowerCase();
+        let resultsFound = false;
+
+        // Filter folder and file elements
+        $('.to_folder, .to_file').each(function () {
+            const text = $(this).text().toLowerCase();
+            if (text.includes(query)) {
+                $(this).closest('.card, tr').show(); // Show matching folders/files
+                resultsFound = true;
+            } else {
+                $(this).closest('.card, tr').hide(); // Hide non-matching ones
+            }
+        });
+
+        // Show or hide "no results" message
+        if (!resultsFound) {
+            $('#no-results').show();
+        } else {
+            $('#no-results').hide();
+        }
+    });
+
+    $('#search-btn').click(function () {
+        $('#search').trigger('input');
+    });
+});
 
 
-			})
-			$('.to_file').each(function() {
-				var val = $(this).text().toLowerCase()
-				if (val.includes(_f))
-					$(this).closest('tr').toggle(true);
-				else
-					$(this).closest('tr').toggle(false);
-
-
-			})
-		})
-	})
 
 	function delete_folder($id) {
 		start_load();
@@ -463,7 +361,4 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 			}
 		})
 	}
-	$('.dynamic-item').append(function() {
-		return $(this).next().find('.dynamic-item')
-	})
 </script>
