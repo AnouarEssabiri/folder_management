@@ -1,164 +1,61 @@
 <?php
 include 'db_connect.php';
 $folder_parent = isset($_GET['fid']) ? $_GET['fid'] : 0;
-$folders = $conn->query("SELECT * FROM folders where parent_id = $folder_parent and user_id = '" . $_SESSION['login_id'] . "'  order by name asc");
-
-
-$files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and user_id = '" . $_SESSION['login_id'] . "'  order by name asc");
-
+$folders = $conn->query("SELECT * FROM folders WHERE parent_id = $folder_parent AND user_id = '" . $_SESSION['login_id'] . "' ORDER BY name ASC");
+$files = $conn->query("SELECT * FROM files WHERE folder_id = $folder_parent AND user_id = '" . $_SESSION['login_id'] . "' ORDER BY name ASC");
 ?>
 <style>
-	/* General Styles */
-	body {
-		font-family: Arial, sans-serif;
-		background-color: #f9f9f9;
-		margin: 0;
-		padding: 0;
-	}
 
-	/* Folder & File Cards */
-	.folder-item,
-	.file-item {
-		border: 1px solid #ddd;
-		border-radius: 8px;
-		background: #fff;
-		padding: 20px;
-		text-align: center;
-		transition: all 0.3s ease-in-out;
-		box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-	}
 
-	.folder-item:hover,
-	.file-item:hover {
-		transform: scale(1.05);
-		background: #f0f8ff;
+
+
+	.folder-item {
 		cursor: pointer;
 	}
 
-	/* Breadcrumbs */
-	.breadcrumb {
-		background: transparent;
-		font-size: 14px;
-		padding: 10px 15px;
-		border-radius: 8px;
-		margin-bottom: 20px;
+	.folder-item:hover {
+		background: #eaeaea;
+		color: black;
+		box-shadow: 3px 3px #0000000f;
 	}
 
-	.breadcrumb a {
-		text-decoration: none;
-		color: #007bff;
-	}
-
-	.breadcrumb a:hover {
-		text-decoration: underline;
-	}
-
-	/* Buttons */
-	button {
-		border: none;
-		padding: 10px 15px;
-		color: #fff;
-		background: #007bff;
-		border-radius: 5px;
-		cursor: pointer;
-		transition: background-color 0.3s;
-	}
-
-	button:hover {
-		background: #0056b3;
-	}
-
-	#new_folder,
-	#new_file {
-		margin-right: 10px;
-	}
-
-	/* Search Bar */
-	.input-group {
-		margin: 20px 0;
-	}
-
-	.input-group .form-control {
-		border-radius: 4px 0 0 4px;
-		border: 1px solid #ddd;
-	}
-
-	.input-group .input-group-append .input-group-text {
-		border-radius: 0 4px 4px 0;
-		background: #007bff;
-		color: #fff;
-	}
-
-	/* Table */
-	table {
-		width: 100%;
-		border-collapse: collapse;
-		margin-top: 20px;
-		background: #fff;
-		border-radius: 8px;
-		overflow: hidden;
-		box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-	}
-
-	table th,
-	table td {
-		padding: 12px;
-		text-align: left;
-		border-bottom: 1px solid #ddd;
-	}
-
-	table th {
-		background: #f7f7f7;
-		font-weight: bold;
-	}
-
-	table tr:hover {
-		background: #f0f8ff;
-	}
-
-	/* Custom Context Menu */
 	.custom-menu {
 		z-index: 1000;
 		position: absolute;
-		background: #fff;
-		border: 1px solid #ddd;
+		background-color: #ffffff;
+		border: 1px solid #0000001c;
 		border-radius: 5px;
-		box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-		padding: 10px;
-		min-width: 150px;
+		padding: 8px;
+		min-width: 13vw;
 	}
 
-	.custom-menu a {
-		display: block;
-		color: #333;
-		padding: 8px 10px;
-		text-decoration: none;
-		border-radius: 4px;
-		transition: background-color 0.2s;
+	a.custom-menu-list {
+		width: 100%;
+		display: flex;
+		color: #4c4b4b;
+		font-weight: 600;
+		font-size: 1em;
+		padding: 1px 11px;
 	}
 
-	.custom-menu a:hover {
-		background: #007bff;
-		color: #fff;
+	.file-item {
+		cursor: pointer;
 	}
 
-	/* Responsive Design */
-	@media screen and (max-width: 768px) {
+	a.custom-menu-list:hover,
+	.file-item:hover,
+	.file-item.active {
+		background: #80808024;
+	}
 
-		.folder-item,
-		.file-item {
-			margin: 10px 0;
-			width: 100%;
-		}
+	/* table th,
+	td {
+		border-left:1px solid gray;
+	} */
 
-		table th,
-		table td {
-			font-size: 14px;
-		}
-
-		.breadcrumb {
-			font-size: 12px;
-		}
+	a.custom-menu-list span.icon {
+		width: 1em;
+		margin-right: 5px
 	}
 </style>
 <nav aria-label="breadcrumb ">
@@ -177,7 +74,7 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 		}
 
 		$breadcrumbs[] = '<li class="breadcrumb-item" style="text-transform:uppercase">
-                          <a class="text-info" href="index.php?page=files">Files</a>
+                          <a class="text-info" href="index.php?page=files">CMC RSK</a>
                       </li>';
 
 		$breadcrumbs = array_reverse($breadcrumbs);
@@ -194,15 +91,17 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 	<div class="col-lg-12">
 
 		<div class="row">
-			<button class="btn btn-info btn-sm" id="new_folder"><i class="fa fa-plus"></i> New Folder</button>
-			<button class="btn btn-info btn-sm ml-4" id="new_file"><i class="fa fa-upload"></i> Upload File</button>
+			<button class="btn btn-info btn-sm" id="new_folder"><i class="fa fa-plus"></i> Nouveau dossier</button>
+			<button class="btn btn-info btn-sm ml-4" id="new_file"><i class="fa fa-upload"></i> Importer un
+				fichier</button>
 		</div>
 		<hr>
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="col-md-4 input-group offset-4">
 
-					<input type="text" class="form-control" placeholder="search ..." id="search" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+					<input type="text" class="form-control" placeholder="Rechercher ..." id="search" aria-label="Small"
+						aria-describedby="inputGroup-sizing-sm">
 					<div class="input-group-append">
 						<span class="input-group-text" id="inputGroup-sizing-sm"><i class="fa fa-search"></i></span>
 					</div>
@@ -211,17 +110,18 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 		</div>
 		<div class="row">
 			<div class="col-md-12">
-				<h4><b>Folders</b></h4>
+				<h4><b>Dossiers</b></h4>
 			</div>
 		</div>
 		<hr>
 		<div class="row" style="justify-content:space-evenly">
 			<?php
 			while ($row = $folders->fetch_assoc()):
-			?>
+				?>
 				<div class="card col-md-3 mt-2 ml-2 mr-2 mb-2 folder-item" data-id="<?php echo $row['id'] ?>">
 					<div class="card-body">
-						<large><span><i class="fa fa-folder"></i></span><b class="to_folder"> <?php echo $row['name'] ?></b></large>
+						<large><span><i class="fa fa-folder"></i></span><b class="to_folder"
+								style="text-transform:uppercase"> <?php echo $row['name'] ?></b></large>
 					</div>
 				</div>
 			<?php endwhile; ?>
@@ -232,7 +132,7 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 				<div class="card-body">
 					<table width="100%">
 						<tr>
-							<th width="40%" class="">Filename</th>
+							<th width="40%" class="">Nom du fichier</th>
 							<th width="20%" class="">Date</th>
 							<th width="40%" class="">Description</th>
 						</tr>
@@ -240,30 +140,57 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 						while ($row = $files->fetch_assoc()):
 							$name = explode(' ||', $row['name']);
 							$name = isset($name[1]) ? $name[0] . " (" . $name[1] . ")." . $row['file_type'] : $name[0] . "." . $row['file_type'];
+
 							$img_arr = array('png', 'jpg', 'jpeg', 'gif', 'psd', 'tif');
 							$doc_arr = array('doc', 'docx');
 							$pdf_arr = array('pdf', 'ps', 'eps', 'prn');
+							$audio_arr = array('mp3', 'wav', 'aac', 'flac', 'ogg');
+							$video_arr = array('mp4', 'avi', 'mkv', 'mov', 'flv', 'webm');
+							$text_arr = array('txt', 'rtf', 'csv', 'md', 'log');
+							$ppt_arr = array('ppt', 'pptx');  // Extensions PowerPoint
+							$access_arr = array('mdb', 'accdb');  // Extensions Access
+							$publisher_arr = array('pub');  // Extensions Publisher
 							$icon = 'fa-file';
-							if (in_array(strtolower($row['file_type']), $img_arr))
-								$icon = 'fa-image';
-							if (in_array(strtolower($row['file_type']), $doc_arr))
-								$icon = 'fa-file-word';
-							if (in_array(strtolower($row['file_type']), $pdf_arr))
-								$icon = 'fa-file-pdf';
-							if (in_array(strtolower($row['file_type']), ['xlsx', 'xls', 'xlsm', 'xlsb', 'xltm', 'xlt', 'xla', 'xlr']))
-								$icon = 'fa-file-excel';
-							if (in_array(strtolower($row['file_type']), ['zip', 'rar', 'tar']))
-								$icon = 'fa-file-archive';
 
-						?>
+							if (in_array(strtolower($row['file_type']), $img_arr)) {
+								$icon = 'fa-image';  // Fichiers image
+							} elseif (in_array(strtolower($row['file_type']), $doc_arr)) {
+								$icon = 'fa-file-word';  // Documents Word
+							} elseif (in_array(strtolower($row['file_type']), $pdf_arr)) {
+								$icon = 'fa-file-pdf';  // Fichiers PDF
+							} elseif (in_array(strtolower($row['file_type']), ['xlsx', 'xls', 'xlsm', 'xlsb', 'xltm', 'xlt', 'xla', 'xlr'])) {
+								$icon = 'fa-file-excel';  // Fichiers Excel
+							} elseif (in_array(strtolower($row['file_type']), ['zip', 'rar', 'tar'])) {
+								$icon = 'fa-file-archive';  // Fichiers archive
+							} elseif (in_array(strtolower($row['file_type']), $audio_arr)) {
+								$icon = 'fa-file-audio';  // Fichiers audio
+							} elseif (in_array(strtolower($row['file_type']), $video_arr)) {
+								$icon = 'fa-file-video';  // Fichiers vidéo
+							} elseif (in_array(strtolower($row['file_type']), $text_arr)) {
+								$icon = 'fa-file-alt';  // Fichiers texte
+							} elseif (in_array(strtolower($row['file_type']), $ppt_arr)) {
+								$icon = 'fa-file-powerpoint';  // Fichiers PowerPoint
+							} elseif (in_array(strtolower($row['file_type']), $access_arr)) {
+								$icon = 'fa-file-database';  // Fichiers Access
+							} elseif (in_array(strtolower($row['file_type']), $publisher_arr)) {
+								$icon = 'fa-file-pdf';  // Fichiers Publisher (peut utiliser l'icône PDF si vous préférez)
+							}
+
+							?>
 							<tr class='file-item' data-id="<?php echo $row['id'] ?>" data-name="<?php echo $name ?>">
 								<td>
-									<a href="./assets/uploads/<?php echo $row['file_path'] ?>" target="_blank">
-										<large><span><i class="fa <?php echo $icon ?>"></i></span><b class="to_file"> <?php echo $name ?></b></large>
-										<input type="text" class="rename_file" value="<?php echo $row['name'] ?>" data-id="<?php echo $row['id'] ?>" data-type="<?php echo $row['file_type'] ?>" style="display: none">
+									<a href="./assets/uploads/<?php echo $row['file_path'] ?>" class="text-dark"
+										target="_blank">
+										<large><span><i class="fa <?php echo $icon ?>"></i></span><b class="to_file">
+												<?php echo $name ?></b></large>
+										<input type="text" class="rename_file" value="<?php echo $row['name'] ?>"
+											data-id="<?php echo $row['id'] ?>" data-type="<?php echo $row['file_type'] ?>"
+											style="display: none">
 									</a>
 								</td>
-								<td><i class="to_file"><?php echo date('Y/m/d h:i A', strtotime($row['date_updated'])) ?></i></td>
+								<td><i
+										class="to_file"><?php echo date('Y/m/d h:i A', strtotime($row['date_updated'])) ?></i>
+								</td>
 								<td><i class="to_file"><?php echo $row['description'] ?></i></td>
 							</tr>
 
@@ -277,26 +204,29 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 	</div>
 </div>
 <div id="menu-folder-clone" style="display: none;">
-	<a href="javascript:void(0)" class="custom-menu-list file-option edit">Rename</a>
-	<a href="javascript:void(0)" class="custom-menu-list file-option delete">Delete</a>
+	<a href="javascript:void(0)" class="custom-menu-list file-option edit">Renommer</a>
+	<a href="javascript:void(0)" class="custom-menu-list file-option delete">Supprimer</a>
 </div>
 <div id="menu-file-clone" style="display: none;">
-	<a href="javascript:void(0)" class="custom-menu-list file-option edit"><span><i class="fa fa-edit"></i> </span>Rename</a>
-	<a href="javascript:void(0)" class="custom-menu-list file-option download"><span><i class="fa fa-download"></i> </span>Download</a>
-	<a href="javascript:void(0)" class="custom-menu-list file-option delete"><span><i class="fa fa-trash"></i> </span>Delete</a>
+	<!-- <a href="javascript:void(0)" class="custom-menu-list file-option edit"><span><i class="fa fa-edit"></i>
+		</span>Renommer</a> -->
+	<a href="javascript:void(0)" class="custom-menu-list file-option download"><span><i class="fa fa-download"></i>
+		</span>Télécharger</a>
+	<a href="javascript:void(0)" class="custom-menu-list file-option delete"><span><i class="fa fa-trash"></i>
+		</span>Supprimer</a>
 </div>
 
 <script>
-	$('#new_folder').click(function() {
+	$('#new_folder').click(function () {
 		uni_modal('', 'manage_folder.php?fid=<?php echo $folder_parent ?>')
 	})
-	$('#new_file').click(function() {
+	$('#new_file').click(function () {
 		uni_modal('', 'manage_files.php?fid=<?php echo $folder_parent ?>')
 	})
-	$('.folder-item').click(function() {
+	$('.folder-item').click(function () {
 		location.href = 'index.php?page=files&fid=' + $(this).attr('data-id')
 	})
-	$('.folder-item').bind("contextmenu", function(event) {
+	$('.folder-item').bind("contextmenu", function (event) {
 		event.preventDefault();
 		$("div.custom-menu").hide();
 		var custom = $("<div class='custom-menu'></div>")
@@ -309,18 +239,18 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 			left: event.pageX + "px"
 		});
 
-		$("div.custom-menu .edit").click(function(e) {
+		$("div.custom-menu .edit").click(function (e) {
 			e.preventDefault()
-			uni_modal('Rename Folder', 'manage_folder.php?fid=<?php echo $folder_parent ?>&id=' + $(this).attr('data-id'))
+			uni_modal('Renommer le dossier', 'manage_folder.php?fid=<?php echo $folder_parent ?>&id=' + $(this).attr('data-id'))
 		})
-		$("div.custom-menu .delete").click(function(e) {
+		$("div.custom-menu .delete").click(function (e) {
 			e.preventDefault()
-			_conf("Are you sure to delete this Folder?", 'delete_folder', [$(this).attr('data-id')])
+			_conf("Êtes-vous sûr de vouloir supprimer ce dossier?", 'delete_folder', [$(this).attr('data-id')])
 		})
 	})
 
-	//FILE
-	$('.file-item').bind("contextmenu", function(event) {
+	//FICHIER
+	$('.file-item').bind("contextmenu", function (event) {
 		event.preventDefault();
 
 		$('.file-item').removeClass('active')
@@ -337,21 +267,21 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 			left: event.pageX + "px"
 		});
 
-		$("div.file.custom-menu .edit").click(function(e) {
+		$("div.file.custom-menu .edit").click(function (e) {
 			e.preventDefault()
 			$('.rename_file[data-id="' + $(this).attr('data-id') + '"]').siblings('large').hide();
 			$('.rename_file[data-id="' + $(this).attr('data-id') + '"]').show();
 		})
-		$("div.file.custom-menu .delete").click(function(e) {
+		$("div.file.custom-menu .delete").click(function (e) {
 			e.preventDefault()
-			_conf("Are you sure to delete this file?", 'delete_file', [$(this).attr('data-id')])
+			_conf("Êtes-vous sûr de vouloir supprimer ce fichier?", 'delete_file', [$(this).attr('data-id')])
 		})
-		$("div.file.custom-menu .download").click(function(e) {
+		$("div.file.custom-menu .download").click(function (e) {
 			e.preventDefault()
 			window.open('download.php?id=' + $(this).attr('data-id'))
 		})
 
-		$('.rename_file').keypress(function(e) {
+		$('.rename_file').keypress(function (e) {
 			var _this = $(this)
 			if (e.which == 13) {
 				start_load()
@@ -364,7 +294,7 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 						type: $(this).attr('data-type'),
 						folder_id: '<?php echo $folder_parent ?>'
 					},
-					success: function(resp) {
+					success: function (resp) {
 						if (typeof resp != undefined) {
 							resp = JSON.parse(resp);
 							if (resp.status == 1) {
@@ -380,20 +310,20 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 		})
 
 	})
-	//FILE
+	//FICHIER
 
 
-	$('.file-item').click(function() {
+	$('.file-item').dblclick(function () {
 		if ($(this).find('input.rename_file').is(':visible') == true)
 			return false;
 		uni_modal($(this).attr('data-name'), 'manage_files.php?<?php echo $folder_parent ?>&id=' + $(this).attr('data-id'))
 	})
-	$(document).bind("click", function(event) {
+	$(document).bind("click", function (event) {
 		$("div.custom-menu").hide();
 		$('#file-item').removeClass('active')
 
 	});
-	$(document).keyup(function(e) {
+	$(document).keyup(function (e) {
 
 		if (e.keyCode === 27) {
 			$("div.custom-menu").hide();
@@ -402,10 +332,10 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 		}
 
 	});
-	$(document).ready(function() {
-		$('#search').keyup(function() {
+	$(document).ready(function () {
+		$('#search').keyup(function () {
 			var _f = $(this).val().toLowerCase()
-			$('.to_folder').each(function() {
+			$('.to_folder').each(function () {
 				var val = $(this).text().toLowerCase()
 				if (val.includes(_f))
 					$(this).closest('.card').toggle(true);
@@ -414,7 +344,7 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 
 
 			})
-			$('.to_file').each(function() {
+			$('.to_file').each(function () {
 				var val = $(this).text().toLowerCase()
 				if (val.includes(_f))
 					$(this).closest('tr').toggle(true);
@@ -434,10 +364,10 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 			data: {
 				id: $id
 			},
-			success: function(resp) {
+			success: function (resp) {
 				if (resp == 1) {
-					alert_toast("Folder successfully deleted.", 'success')
-					setTimeout(function() {
+					alert_toast("Dossier supprimé avec succès.", 'success')
+					setTimeout(function () {
 						location.reload()
 					}, 1500)
 				}
@@ -453,17 +383,17 @@ $files = $conn->query("SELECT * FROM files where folder_id = $folder_parent and 
 			data: {
 				id: $id
 			},
-			success: function(resp) {
+			success: function (resp) {
 				if (resp == 1) {
-					alert_toast("Folder successfully deleted.", 'success')
-					setTimeout(function() {
+					alert_toast("Fichier supprimé avec succès.", 'success')
+					setTimeout(function () {
 						location.reload()
 					}, 1500)
 				}
 			}
 		})
 	}
-	$('.dynamic-item').append(function() {
+	$('.dynamic-item').append(function () {
 		return $(this).next().find('.dynamic-item')
 	})
 </script>

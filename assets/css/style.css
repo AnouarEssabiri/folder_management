@@ -8,6 +8,9 @@
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
+html{
+  cursor: url("../cmc.png");
+}
 body {
   font-family: "Open Sans", sans-serif;
   color: #444444;
@@ -18,7 +21,9 @@ body {
 a {
   color: #1977cc;
 }
-
+#sidebar{
+  background-color:red;
+}
 a:hover {
   color: #3291e6;
   text-decoration: none;
